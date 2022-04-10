@@ -11,7 +11,46 @@
     <noscript>
       <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
     </noscript>
-    <div id="app"></div>
+    <div id="app1">
+      <ul>
+        <li v-for="message in messages">
+          {{ message.text }} - {{ message.createdAt}}
+          <button @click="deleteMessage(message)">X</button>
+        </li>
+      </ul>
+      <form v-on:submit.prevent="addMessage">
+        <textarea v-model="newMessage" placeholder="Leave a message">
+        </textarea>
+        <div><button :disabled="addDisabled" type="submit">Add</button></div>
+      </form>
+    </div>
+    <script src="https://unpkg.com/vue@2.5.13/dist/vue.js"></script>
+    <script>
+      let vm = new Vue({
+        el: '#app1',
+        data: {
+          messages: [],
+          newMessage: ''
+        },
+        methods: {
+          addMessage (event) {
+            if (!this.newMessage) { return; }
+            this.messages.push({
+              text: this.newMessage, createdAt: new Date()
+            });
+            this.newMessage = '';
+          },
+          deleteMessage (message) {
+            this.messages.splice(this.messages.indexOf(message), 1)
+          }
+        },
+        computed: {
+          addDisabled() {
+            return this.messages.length >= 10 || this.newMessage.length > 50;
+          }
+        }
+      });
+    </script>
     <!-- built files will be auto injected -->
   </body>
 </html>
