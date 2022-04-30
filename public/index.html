@@ -6,18 +6,19 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="icon" href="<%= BASE_URL %>favicon.ico">
     <title><%= htmlWebpackPlugin.options.title %></title>
+    <style>
+      [v-cloak] {display: none;}
+      body > div {width: 500px; margin: 0 auto;}
+      textarea {width: 100%;}
+      ul {padding: 0 15px;}
+    </style>
   </head>
   <body>
     <noscript>
       <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
     </noscript>
-    <div id="app1">
-      <ul>
-        <li v-for="message in messages">
-          {{ message.text }} - {{ message.createdAt}}
-          <button @click="deleteMessage(message)">X</button>
-        </li>
-      </ul>
+    <div id="app1" v-cloak>
+      <message-list :items="messages" @delete="deleteMessage"></message-list>
       <form v-on:submit.prevent="addMessage">
         <textarea v-model="newMessage" placeholder="Leave a message">
         </textarea>
@@ -25,7 +26,8 @@
       </form>
     </div>
     <script src="https://unpkg.com/vue@2.5.13/dist/vue.js"></script>
-    <script>
+    <script type="module">
+      import MessageList from './components/MessageList.js';
       let vm = new Vue({
         el: '#app1',
         data: {
@@ -35,8 +37,10 @@
         methods: {
           addMessage (event) {
             if (!this.newMessage) { return; }
+
+            let now = new Date();
             this.messages.push({
-              text: this.newMessage, createdAt: new Date()
+              id: now.getTime(), text: this.newMessage, createdAt: now
             });
             this.newMessage = '';
           },
@@ -48,6 +52,9 @@
           addDisabled() {
             return this.messages.length >= 10 || this.newMessage.length > 50;
           }
+        },
+        components: {
+          MessageList
         }
       });
     </script>
